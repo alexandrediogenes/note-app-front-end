@@ -11,12 +11,12 @@ function App() {
       <Route path="/register" element={<Register />} />
 
       <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
+  path="/dashboard"
+  element={
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+  }
       />
     </Routes>
   );

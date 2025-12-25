@@ -1,14 +1,31 @@
-import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { ReactNode, useEffect, useState } from 'react';
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const token = localStorage.getItem('token');
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  if (!token) {
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return <p>Carregando...</p>;
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 
