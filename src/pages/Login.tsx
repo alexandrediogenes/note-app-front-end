@@ -1,55 +1,56 @@
-// src/pages/Login.tsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
-import '../App.css'; // CSS global
+import { useNavigate, Link } from 'react-router-dom';
 
-const Login: React.FC = () => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
-      const response = await axios.post(
+      const res = await axios.post(
         `${process.env.REACT_APP_API_URL}/auth/login`,
         { email, password }
       );
-      localStorage.setItem('token', response.data.token);
-      alert('Login realizado com sucesso!');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro no login');
+
+      localStorage.setItem('token', res.data.token);
+
+      console.log('LOGIN OK, REDIRECIONANDO...');
+      navigate('/dashboard', { replace: true });
+    } catch (err) {
+      alert('Erro ao fazer login');
     }
   };
 
   return (
     <div className="container">
       <h2>Login</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+
       <form onSubmit={handleSubmit}>
         <input
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
           required
         />
+
         <input
           type="password"
           placeholder="Senha"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
           required
         />
-        <button type="submit" className="login-btn">
-          Login
-        </button>
+
+        <button type="submit">Entrar</button>
       </form>
+
       <p>
-        Não tem conta?{' '}
-        <a href="/register" style={{ color: '#008f75' }}>
-          Registrar
-        </a>
+        Não tem conta? <Link to="/register">Registrar</Link>
       </p>
     </div>
   );

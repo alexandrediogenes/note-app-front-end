@@ -1,6 +1,6 @@
-// src/pages/Register.tsx
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import '../App.css';
 
 const Register: React.FC = () => {
@@ -8,53 +8,60 @@ const Register: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/auth/register`,
-        { name, email, password }
-      );
-      localStorage.setItem('token', response.data.token);
-      alert('Registro realizado com sucesso!');
+      await axios.post(`${process.env.REACT_APP_API_URL}/auth/register`, {
+        name,
+        email,
+        password,
+      });
+
+      // Redireciona para login após registro
+      navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao registrar usuário');
+      if (err.response) {
+        setError(err.response.data.message);
+      } else {
+        setError('Erro ao conectar com o servidor');
+      }
     }
   };
 
   return (
-    <div className="container">
+    <div className="auth-container">
       <h2>Registrar</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleRegister}>
         <input
           type="text"
           placeholder="Nome"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={e => setName(e.target.value)}
           required
         />
         <input
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
           required
         />
         <input
           type="password"
           placeholder="Senha"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
           required
         />
-        <button type="submit" className="register-btn">
-          Registrar
-        </button>
+        {error && <p className="error">{error}</p>}
+        <button type="submit">Registrar</button>
       </form>
       <p>
-        Já tem conta? <a href="/" style={{ color: '#008f75' }}>Login</a>
+        Já tem conta? <a href="/">Entrar</a>
       </p>
     </div>
   );

@@ -1,73 +1,121 @@
-import React, { useEffect, useState, useContext } from 'react';
-import api, { setToken } from '../api/api';
-import { AuthContext } from '../context/AuthContext';
-import NoteCard from '../components/NoteCard';
-import NoteForm from '../components/NoteForm';
-import Navbar from '../components/Navbar';
+// src/pages/Dashboard.tsx
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import '../App.css';
 
 interface Note {
   _id: string;
   title: string;
   content: string;
-  color: string;
   isPinned: boolean;
+  createdAt: string;
 }
 
-const Dashboard = () => {
-  const { token } = useContext(AuthContext);
+const Dashboard: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (token) setToken(token);
-    fetchNotes();
-  }, [token]);
+  const token = localStorage.getItem('token');
 
+  // Buscar notas
   const fetchNotes = async () => {
     try {
-      const res = await api.get('/notes');
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/notes`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setNotes(res.data);
-    } catch (error) {
-      console.error(error);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Erro ao buscar notas');
     }
   };
 
-  const handleEdit = (noteId: string) => {
-    const note = notes.find(n => n._id === noteId);
-    if (note) setEditingNote(note);
-    setShowForm(true);
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  // Criar nota
+  const handleAddNote = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL}/notes`,
+        { title, content },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setNotes([res.data, ...notes]);
+      setTitle('');
+      setContent('');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Erro ao criar nota');
+    }
   };
 
-  const handleDelete = async (noteId: string) => {
-    await api.delete(`/notes/${noteId}`);
-    fetchNotes();
+  // Deletar nota
+  const handleDelete = async (id: string) => {
+    try {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/notes/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setNotes(notes.filter((note) => note._id !== id));
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Erro ao deletar nota');
+    }
   };
 
   return (
-    <div className="dashboard">
-      <Navbar />
-      <button onClick={() => { setEditingNote(null); setShowForm(true); }}>Criar Nota</button>
-      {showForm && (
-        <NoteForm
-          noteId={editingNote?._id}
-          initialTitle={editingNote?.title}
-          initialContent={editingNote?.content}
-          initialColor={editingNote?.color}
-          onClose={() => setShowForm(false)}
-          onSave={fetchNotes}
+    <div className="container">
+      <h2>Dashboard</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      <form onSubmit={handleAddNote}>
+        <input
+          type="text"
+          placeholder="Título"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
         />
-      )}
-      <div className="notes-grid">
-        {notes.map(note => (
-          <NoteCard
-            key={note._id}
-            {...note}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        ))}
-      </div>
+        <textarea
+          placeholder="Conteúdo"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          required
+        />
+        <button type="submit" className="login-btn">
+          Adicionar Nota
+        </button>
+      </form>
+
+      <hr style={{ margin: '1rem 0', borderColor: '#444' }} />
+
+      <h3>Minhas Notas</h3>
+      {notes.length === 0 && <p>Nenhuma nota encontrada.</p>}
+
+      {notes.map((note) => (
+        <div
+          key={note._id}
+          style={{
+            backgroundColor: '#3b3b5e',
+            padding: '1rem',
+            borderRadius: '10px',
+            marginBottom: '1rem',
+          }}
+        >
+          <h4>{note.title}</h4>
+          <p>{note.content}</p>
+          <small>Criada em: {new Date(note.createdAt).toLocaleString()}</small>
+          <br />
+          <button
+            onClick={() => handleDelete(note._id)}
+            className="register-btn"
+            style={{ marginTop: '0.5rem' }}
+          >
+            Deletar
+          </button>
+        </div>
+      ))}
     </div>
   );
 };
