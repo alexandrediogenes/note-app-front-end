@@ -1,35 +1,60 @@
 import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api, { setToken } from '../api/api';
 import { AuthContext } from '../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setToken: saveToken } = useContext(AuthContext);
+  const { setToken: setAuthToken } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const res = await api.post('/auth/login', { email, password });
-      saveToken(res.data.token);
-      setToken(res.data.token);
+      setAuthToken(res.data.token);
+      localStorage.setItem('token', res.data.token);
+      setToken(res.data.token); // Atualiza o axios header
       navigate('/dashboard');
-    } catch (error: any) {
-      alert(error.response?.data?.message || 'Erro no login');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Erro no login');
     }
   };
 
   return (
     <div className="container">
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Senha" value={password} onChange={e => setPassword(e.target.value)} required />
-        <button type="submit">Entrar</button>
+      <h2>Entrar</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <form onSubmit={handleLogin}>
+        <input 
+          type="email" 
+          placeholder="Email" 
+          value={email} 
+          onChange={e => setEmail(e.target.value)} 
+          required 
+        />
+        <input 
+          type="password" 
+          placeholder="Senha" 
+          value={password} 
+          onChange={e => setPassword(e.target.value)} 
+          required 
+        />
+        <button type="submit" className="btn-primary">Entrar</button>
       </form>
-      <p>Não tem conta? <Link to="/register">Registrar</Link></p>
+
+      <p style={{ marginTop: '10px' }}>
+        Não tem conta?{' '}
+        <button 
+          className="btn-primary" 
+          onClick={() => navigate('/register')}
+          style={{ padding: '5px 15px', fontSize: '0.9rem' }}
+        >
+          Registrar
+        </button>
+      </p>
     </div>
   );
 };

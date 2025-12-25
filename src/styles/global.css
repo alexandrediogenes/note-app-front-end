@@ -1,49 +1,162 @@
+/* ===== Global ===== */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #121212;
+  background-color: #121212; /* fundo escuro */
   color: #ffffff;
 }
 
+/* Containers de páginas */
 .container {
   max-width: 400px;
   margin: 50px auto;
   padding: 20px;
-  background-color: #1e1e1e;
+  background-color: #1e1e1e; /* container levemente mais claro */
   border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 150, 136, 0.3); /* sombra verde suave */
 }
 
-input {
+/* ===== Inputs destacados ===== */
+input, textarea {
   display: block;
   width: 100%;
   padding: 10px;
   margin: 10px 0;
   border: none;
   border-radius: 5px;
+  background-color: #ffffff; /* fundo branco */
+  color: #000000; /* texto escuro */
+  font-weight: bold;
+  font-size: 1rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
+/* Placeholder com contraste */
+input::placeholder, textarea::placeholder {
+  color: #555555;
+}
+
+/* ===== Botões padronizados ===== */
 button {
   padding: 10px 20px;
   border: none;
-  background-color: #6200ee;
-  color: white;
+  background-color: #00b894; /* verde vibrante */
+  color: #fff;
   border-radius: 5px;
   cursor: pointer;
+  margin: 10px 0;
+  font-weight: bold;
+  transition: background-color 0.2s, transform 0.1s;
 }
 
 button:hover {
-  background-color: #3700b3;
+  background-color: #019875; /* verde mais escuro no hover */
+  transform: translateY(-1px);
 }
 
-.dashboard .notes-grid {
+/* ===== Navbar ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #1f1f1f;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  margin-bottom: 20px;
+}
+
+.navbar h2 {
+  margin: 0;
+}
+
+/* ===== Dashboard ===== */
+.dashboard {
+  padding: 0 20px 50px 20px;
+}
+
+.notes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 15px;
-  padding: 20px;
 }
 
-.dashboard .note {
+/* ===== Nota ===== */
+.note {
   padding: 15px;
   border-radius: 8px;
   color: #000;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #4b4b8a; /* roxo suave */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.note h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+}
+
+.note button {
+  padding: 5px 10px;
+  font-size: 0.85rem;
+  margin-right: 5px;
+}
+
+/* ===== Modal ===== */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(18,18,18,0.9); /* fundo semi-transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal form {
+  background-color: #1e1e1e;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 10px rgba(0,150,136,0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal input[type="color"] {
+  width: 50px;
+  height: 35px;
+  padding: 0;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+}
+
+/* Botão criar nota */
+.dashboard > button {
+  margin-bottom: 15px;
+  background-color: #00b894; /* verde vibrante */
+  color: #fff;
+}
+
+.dashboard > button:hover {
+  background-color: #019875;
+}
+
+/* ===== Responsividade ===== */
+@media (max-width: 600px) {
+  .notes-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .navbar {
+    flex-direction: column;
+    gap: 10px;
+  }
 }

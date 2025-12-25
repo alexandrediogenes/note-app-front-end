@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
 import api, { setToken } from '../api/api';
 import { AuthContext } from '../context/AuthContext';
+import NoteCard from '../components/NoteCard';
+import NoteForm from '../components/NoteForm';
+import Navbar from '../components/Navbar';
 
 interface Note {
   _id: string;
@@ -13,6 +16,8 @@ interface Note {
 const Dashboard = () => {
   const { token } = useContext(AuthContext);
   const [notes, setNotes] = useState<Note[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editingNote, setEditingNote] = useState<Note | null>(null);
 
   useEffect(() => {
     if (token) setToken(token);
@@ -28,15 +33,39 @@ const Dashboard = () => {
     }
   };
 
+  const handleEdit = (noteId: string) => {
+    const note = notes.find(n => n._id === noteId);
+    if (note) setEditingNote(note);
+    setShowForm(true);
+  };
+
+  const handleDelete = async (noteId: string) => {
+    await api.delete(`/notes/${noteId}`);
+    fetchNotes();
+  };
+
   return (
-    <div className="dashboard dark">
-      <h1>Notas</h1>
+    <div className="dashboard">
+      <Navbar />
+      <button onClick={() => { setEditingNote(null); setShowForm(true); }}>Criar Nota</button>
+      {showForm && (
+        <NoteForm
+          noteId={editingNote?._id}
+          initialTitle={editingNote?.title}
+          initialContent={editingNote?.content}
+          initialColor={editingNote?.color}
+          onClose={() => setShowForm(false)}
+          onSave={fetchNotes}
+        />
+      )}
       <div className="notes-grid">
         {notes.map(note => (
-          <div key={note._id} className="note" style={{ backgroundColor: note.color }}>
-            <h3>{note.title}</h3>
-            <p>{note.content}</p>
-          </div>
+          <NoteCard
+            key={note._id}
+            {...note}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
         ))}
       </div>
     </div>
