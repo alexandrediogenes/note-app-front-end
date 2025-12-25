@@ -3,6 +3,7 @@ import api from '../services/api';
 
 const Dashboard = () => {
   const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -10,12 +11,18 @@ const Dashboard = () => {
         const response = await api.get('/notes');
         setNotes(response.data);
       } catch (error) {
-        console.error('Erro ao buscar notas', error);
+        console.error('Erro ao buscar notas');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchNotes();
   }, []);
+
+  if (loading) {
+    return <p>Carregando...</p>;
+  }
 
   return (
     <div>
