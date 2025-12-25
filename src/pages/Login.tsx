@@ -1,23 +1,22 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api, { setToken } from '../api/api';
-import { AuthContext } from '../context/AuthContext';
+// src/pages/Login.tsx
+import React, { useState } from 'react';
+import axios from 'axios';
+import '../App.css'; // CSS global
 
-const Login = () => {
+const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setToken: setAuthToken } = useContext(AuthContext);
-  const navigate = useNavigate();
   const [error, setError] = useState('');
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post('/auth/login', { email, password });
-      setAuthToken(res.data.token);
-      localStorage.setItem('token', res.data.token);
-      setToken(res.data.token); // Atualiza o axios header
-      navigate('/dashboard');
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/auth/login`,
+        { email, password }
+      );
+      localStorage.setItem('token', response.data.token);
+      alert('Login realizado com sucesso!');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Erro no login');
     }
@@ -25,35 +24,32 @@ const Login = () => {
 
   return (
     <div className="container">
-      <h2>Entrar</h2>
+      <h2>Login</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleLogin}>
-        <input 
-          type="email" 
-          placeholder="Email" 
-          value={email} 
-          onChange={e => setEmail(e.target.value)} 
-          required 
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
         />
-        <input 
-          type="password" 
-          placeholder="Senha" 
-          value={password} 
-          onChange={e => setPassword(e.target.value)} 
-          required 
+        <input
+          type="password"
+          placeholder="Senha"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
         />
-        <button type="submit" className="btn-primary">Entrar</button>
-      </form>
-
-      <p style={{ marginTop: '10px' }}>
-        Não tem conta?{' '}
-        <button 
-          className="btn-primary" 
-          onClick={() => navigate('/register')}
-          style={{ padding: '5px 15px', fontSize: '0.9rem' }}
-        >
-          Registrar
+        <button type="submit" className="login-btn">
+          Login
         </button>
+      </form>
+      <p>
+        Não tem conta?{' '}
+        <a href="/register" style={{ color: '#008f75' }}>
+          Registrar
+        </a>
       </p>
     </div>
   );

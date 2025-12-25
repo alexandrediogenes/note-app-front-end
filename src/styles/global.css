@@ -13,7 +13,7 @@ body {
   padding: 20px;
   background-color: #1e1e1e; /* container levemente mais claro */
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 150, 136, 0.3); /* sombra verde suave */
+  box-shadow: 0 0 10px rgba(0, 130, 100, 0.3); /* sombra verde suave */
 }
 
 /* ===== Inputs destacados ===== */
@@ -40,7 +40,7 @@ input::placeholder, textarea::placeholder {
 button {
   padding: 10px 20px;
   border: none;
-  background-color: #00b894; /* verde vibrante */
+  background-color: #008f75; /* verde uniforme */
   color: #fff;
   border-radius: 5px;
   cursor: pointer;
@@ -50,8 +50,19 @@ button {
 }
 
 button:hover {
-  background-color: #019875; /* verde mais escuro no hover */
+  background-color: #006f55; /* hover verde mais escuro */
   transform: translateY(-1px);
+}
+
+/* Botões específicos login/registrar */
+button.entrar-btn,
+button.register-btn {
+  background-color: #008f75;
+}
+
+button.entrar-btn:hover,
+button.register-btn:hover {
+  background-color: #006f55;
 }
 
 /* ===== Navbar ===== */
@@ -124,7 +135,7 @@ button:hover {
   border-radius: 10px;
   width: 90%;
   max-width: 400px;
-  box-shadow: 0 0 10px rgba(0,150,136,0.3);
+  box-shadow: 0 0 10px rgba(0,130,100,0.3);
   display: flex;
   flex-direction: column;
 }
@@ -141,12 +152,12 @@ button:hover {
 /* Botão criar nota */
 .dashboard > button {
   margin-bottom: 15px;
-  background-color: #00b894; /* verde vibrante */
+  background-color: #008f75;
   color: #fff;
 }
 
 .dashboard > button:hover {
-  background-color: #019875;
+  background-color: #006f55;
 }
 
 /* ===== Responsividade ===== */
