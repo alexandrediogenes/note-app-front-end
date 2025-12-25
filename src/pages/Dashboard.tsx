@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
 
+interface Note {
+  _id: string;
+  title: string;
+  content: string;
+}
+
 const Dashboard = () => {
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,7 +24,7 @@ const Dashboard = () => {
     };
 
     fetchNotes();
-  }, []);
+  }, []); // ⚠️ NÃO coloque notes aqui
 
   if (loading) {
     return <p>Carregando...</p>;
@@ -31,7 +37,7 @@ const Dashboard = () => {
       {notes.length === 0 ? (
         <p>Nenhuma nota encontrada</p>
       ) : (
-        notes.map((note: any) => (
+        notes.map(note => (
           <div key={note._id}>
             <h3>{note.title}</h3>
             <p>{note.content}</p>

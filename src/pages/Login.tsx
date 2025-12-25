@@ -1,58 +1,51 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import api from '../services/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}/auth/login`,
-        { email, password }
-      );
+      const response = await api.post('/auth/login', {
+        email,
+        password,
+      });
 
-      localStorage.setItem('token', res.data.token);
-
-      console.log('LOGIN OK, REDIRECIONANDO...');
-      navigate('/dashboard', { replace: true });
-    } catch (err) {
+      localStorage.setItem('token', response.data.token);
+      navigate('/dashboard');
+    } catch (error) {
       alert('Erro ao fazer login');
     }
   };
 
   return (
-    <div className="container">
+    <form onSubmit={handleLogin}>
       <h2>Login</h2>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-        />
+      <input
+        placeholder="Email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+      />
 
-        <input
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-        />
+      <input
+        type="password"
+        placeholder="Senha"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
+      />
 
-        <button type="submit">Entrar</button>
-      </form>
+      <button type="submit">Entrar</button>
 
       <p>
         Não tem conta? <Link to="/register">Registrar</Link>
       </p>
-    </div>
+    </form>
   );
 };
 
